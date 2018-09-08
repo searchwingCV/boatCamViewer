@@ -114,10 +114,17 @@ void boxTracker::run()
             cv::Rect2d trackedRoi;
 
             bool ok = update(m_currImage,trackedRoi);
+            if( trackedRoi.x < 0 || trackedRoi.x > m_currImage.cols || trackedRoi.width > m_currImage.cols ||
+                trackedRoi.y < 0 || trackedRoi.y > m_currImage.rows || trackedRoi.height > m_currImage.rows )
+            {
+                resetTracker();
+                ok = false;
+            }
             if(ok){
                 QRect qtrackedRoi = QRect(trackedRoi.x,trackedRoi.y,trackedRoi.width,trackedRoi.height);
                 m_curTrackedRoi = qtrackedRoi;
                 m_curTrackerStatus=trackerstatus::TRACKING;
+
             }
             else{
                 m_curTrackerStatus=trackerstatus::NO_TRACK;
