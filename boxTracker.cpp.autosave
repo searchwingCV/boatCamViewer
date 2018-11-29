@@ -75,7 +75,6 @@ bool boxTracker::init(cv::Mat image, cv::Rect2d boundingbox)
             ok = m_openCvTracker->init(image,boundingbox);
             m_currImageProcessed = true;
             trackerMutex.unlock();
-
         }
     }
     else if(m_curTrackertype==trackertype::caffeGOTURN){

@@ -18,8 +18,15 @@ public:
     int loadVideo(QString path);
     void Play();
     void Pause();
+    void setFrameRate(int i_frameRate);
+    enum ctrlMsg{
+        play,pause,stop,restart
+    };
+
 signals:
     void sendImage(cv::Mat newImage);
+public slots:
+    void receiveControlMsg(ImageIO::ctrlMsg ctrlMsgIn);
 private:
     bool stopVideo;
     bool pauseVideo;
@@ -29,6 +36,8 @@ private:
     int frameRate;
 protected:
     void run();
+
+
 };
 
 #endif // IMAGEIO_H

@@ -37,7 +37,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>/home/julle/ControlerProjekte/SearchWing/Data/video/boatCam/yt1.avi</string>
+     <string>/home/julle/Share-pc/yt1.avi</string>
     </property>
    </widget>
    <widget class="QPushButton" name="pauseButton">
@@ -112,6 +112,32 @@
      <string/>
     </property>
    </widget>
+   <widget class="QLabel" name="label">
+    <property name="geometry">
+     <rect>
+      <x>40</x>
+      <y>180</y>
+      <width>41</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string> fps</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="framerate">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>185</y>
+      <width>31</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>30</string>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
@@ -119,7 +145,7 @@
      <x>0</x>
      <y>0</y>
      <width>844</width>
-     <height>25</height>
+     <height>22</height>
     </rect>
    </property>
   </widget>

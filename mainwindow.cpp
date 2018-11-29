@@ -26,7 +26,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect(ui->trackerimageviewer, SIGNAL(sendRoi(QRect)), &tracker, SLOT(receiveRoi(QRect)));
     connect(&tracker, SIGNAL(sendTrackerInfo(boxTracker::trackerInfo)), ui->trackerimageviewer, SLOT(receiveTrackerInfo(boxTracker::trackerInfo)));
-
+    connect(&tracker, SIGNAL(sendControlMsg(ImageIO::ctrlMsg)), &imageIO, SLOT(receiveControlMsg(ImageIO::ctrlMsg)));
 }
 
 MainWindow::~MainWindow()
@@ -45,7 +45,8 @@ void MainWindow::on_loadButton_clicked()
     }
     int ret;
     ret = imageIO.loadVideo(fileName);
-
+    QString strFrameRate = this->ui->framerate->text();
+    imageIO.setFrameRate(strFrameRate.toInt());
     if(ret < 0){
         QMessageBox::critical(this,
                               "Video Error",
@@ -88,3 +89,8 @@ void MainWindow::on_trackerComboBox_currentIndexChanged(int index)
     tracker.createNewTracker(type);
 }
 
+void MainWindow::on_framerate_editingFinished()
+{
+    QString strFrameRate = this->ui->framerate->text();
+    imageIO.setFrameRate(strFrameRate.toInt());
+}

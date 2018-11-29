@@ -27,6 +27,8 @@ private slots:
     void on_playButton_clicked();
     void on_trackerComboBox_currentIndexChanged(int index);
 
+    void on_framerate_editingFinished();
+
 private:
     Ui::MainWindow *ui;
     ImageIO imageIO;
