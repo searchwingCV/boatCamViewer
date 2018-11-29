@@ -30,9 +30,14 @@ HEADERS  += mainwindow.h \
 
 FORMS    += mainwindow.ui
 
-INCLUDEPATH += /usr/local/include/opencv /usr/local/include
-LIBS += -L/usr/local/lib -lopencv_core -lopencv_imgcodecs -lopencv_imgproc -lopencv_videoio -lopencv_video -lopencv_tracking -lopencv_highgui
+DEFINES += USE_CUDA
 
+INCLUDEPATH += /usr/local/include/opencv /usr/local/include
+
+LIBS += -L/usr/local/lib -lopencv_core -lopencv_imgcodecs -lopencv_imgproc -lopencv_videoio -lopencv_video -lopencv_tracking -lopencv_highgui
+contains( DEFINES, USE_CUDA ){
+    LIBS += -lopencv_cudawarping
+}
 QMAKE_CXXFLAGS += -std=c++0x
 
 # remove possible other optimization flags

@@ -11,9 +11,7 @@ MainWindow::MainWindow(QWidget *parent) :
     m_tracker(boxTracker::trackertype::MEDIANFLOW),
     m_imgPreprocessor()
 {
-
     ui->setupUi(this);
-    ui->trackerimageviewer->setParent(this);
     ui->trackerimageviewer->setScene(new QGraphicsScene(this));
     ui->trackerimageviewer->scene()->addItem(&m_pixmap);
 
@@ -22,9 +20,8 @@ MainWindow::MainWindow(QWidget *parent) :
         ui->trackerComboBox->addItem(*iter);
     }
 
-    ui->trackerStatusLabel->setStyleSheet("QLabel { background-color : red; color : blue; }");
-
     sendPreProcConf();
+    ui->horizontDetectorTreshSliderVal->setText(QString::number(ui->horizontDetectorTreshSlider->value()));
 
     connect(&m_imageIO, SIGNAL(sendImage(cv::Mat)), &m_imgPreprocessor, SLOT(receiveImage(cv::Mat)));
     connect(&m_imgPreprocessor, SIGNAL(sendImage(cv::Mat)), this, SLOT(receiveImage(cv::Mat)));
@@ -113,6 +110,7 @@ void MainWindow::on_horizontCorrectionCheckBox_toggled(bool checked)
 
 void MainWindow::on_horizontDetectorTreshSlider_sliderMoved(int position)
 {
+    ui->horizontDetectorTreshSliderVal->setText(QString::number(ui->horizontDetectorTreshSlider->value()));
     sendPreProcConf();
 }
 

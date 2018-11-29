@@ -1,18 +1,18 @@
 #include "horizontCorrector.h"
-//#include "opencv2/core/ocl.hpp"
+#ifdef USE_CUDA
+#include "opencv2/cudawarping.hpp"
+#endif
 
 void correctHorizont(cv::Mat &io_img, cv::Mat transformation)
 {
-    //cv::ocl::setUseOpenCL(true);
-    int imgX = io_img.cols;
-    int imgY = io_img.rows;
-
-    //cv::UMat oclMat;
-    //io_img.copyTo(oclMat);
-
-    cv::warpAffine(io_img,io_img,transformation,cv::Size(imgX,imgY));
-
-    //oclMat.copyTo(io_img);
+#ifndef USE_CUDA
+    cv::warpAffine(io_img,io_img,transformation,io_img.size());
+#else
+    cv::cuda::GpuMat imageGpuIn,imageGpuOut;
+    imageGpuIn.upload(io_img);
+    cv::cuda::warpAffine(imageGpuIn,imageGpuOut,transformation,io_img.size());
+    imageGpuOut.download(io_img);
+#endif
 }
 
 cv::Mat calcHorizontCorrectionTransform(cv::Mat &io_img, cv::Point2f i_horizontCenterPt, float i_horizontAngle)

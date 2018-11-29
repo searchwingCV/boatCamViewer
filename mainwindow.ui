@@ -183,6 +183,19 @@
      <string>Horizont</string>
     </property>
    </widget>
+   <widget class="QLabel" name="horizontDetectorTreshSliderVal">
+    <property name="geometry">
+     <rect>
+      <x>30</x>
+      <y>340</y>
+      <width>31</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
@@ -190,7 +203,7 @@
      <x>0</x>
      <y>0</y>
      <width>844</width>
-     <height>25</height>
+     <height>22</height>
     </rect>
    </property>
   </widget>
