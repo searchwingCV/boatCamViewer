@@ -1,5 +1,7 @@
 #include "imageio.h"
 #include <QMessageBox>
+#include <horizontDetector.h>
+#include "horizontCorrector.h"
 
 ImageIO::ImageIO() : QThread()
 {
@@ -41,7 +43,7 @@ int ImageIO::loadVideo(QString path)
 }
 void ImageIO::run()
 {
-    int delay = (1000/frameRate);
+
     cv::Mat frame;
     while(video.isOpened()){
         if (!video.read(frame))
@@ -64,7 +66,7 @@ void ImageIO::run()
         while(pauseVideo){
             msleep(10);
         }
-        msleep(delay);
+        msleep((1000/frameRate));
     }
 }
 void ImageIO::Play()
@@ -91,6 +93,13 @@ void ImageIO::Play()
 void ImageIO::Pause()
 {
     pauseVideo = true;
+}
+
+void ImageIO::setFrameRate(int i_frameRate)
+{
+    if(i_frameRate < 0 )
+        frameRate=(int) video.get(CV_CAP_PROP_FPS);
+    frameRate = i_frameRate;
 }
 
 ImageIO::~ImageIO()

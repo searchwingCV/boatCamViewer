@@ -7,25 +7,32 @@
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
-    imageIO(),
-    tracker(boxTracker::trackertype::MEDIANFLOW)
+    m_imageIO(),
+    m_tracker(boxTracker::trackertype::MEDIANFLOW),
+    m_imgPreprocessor()
 {
-    ui->setupUi(this);
-    ui->trackerimageviewer->setScene(new QGraphicsScene(this));
-    ui->trackerimageviewer->scene()->addItem(&pixmap);
 
-    QList<QString> names=tracker.getTrackerTypes();
+    ui->setupUi(this);
+    ui->trackerimageviewer->setParent(this);
+    ui->trackerimageviewer->setScene(new QGraphicsScene(this));
+    ui->trackerimageviewer->scene()->addItem(&m_pixmap);
+
+    QList<QString> names=m_tracker.getTrackerTypes();
     for (auto iter = names.cbegin(); iter != names.cend();iter++){
         ui->trackerComboBox->addItem(*iter);
     }
 
     ui->trackerStatusLabel->setStyleSheet("QLabel { background-color : red; color : blue; }");
 
-    connect(&imageIO, SIGNAL(sendImage(cv::Mat)), this, SLOT(receiveImage(cv::Mat)));
-    connect(&imageIO, SIGNAL(sendImage(cv::Mat)), &tracker, SLOT(receiveImage(cv::Mat)));
+    sendPreProcConf();
 
-    connect(ui->trackerimageviewer, SIGNAL(sendRoi(QRect)), &tracker, SLOT(receiveRoi(QRect)));
-    connect(&tracker, SIGNAL(sendTrackerInfo(boxTracker::trackerInfo)), ui->trackerimageviewer, SLOT(receiveTrackerInfo(boxTracker::trackerInfo)));
+    connect(&m_imageIO, SIGNAL(sendImage(cv::Mat)), &m_imgPreprocessor, SLOT(receiveImage(cv::Mat)));
+    connect(&m_imgPreprocessor, SIGNAL(sendImage(cv::Mat)), this, SLOT(receiveImage(cv::Mat)));
+    connect(&m_imgPreprocessor, SIGNAL(sendImage(cv::Mat)), &m_tracker, SLOT(receiveImage(cv::Mat)));
+
+    connect(ui->trackerimageviewer, SIGNAL(sendRoi(QRect)), &m_tracker, SLOT(receiveRoi(QRect)));
+    connect(&m_tracker, SIGNAL(sendTrackerInfo(boxTracker::trackerInfo)), ui->trackerimageviewer, SLOT(receiveTrackerInfo(boxTracker::trackerInfo)));
+    connect(&m_imgPreprocessor, SIGNAL(sendHorizontInfo(horizontDetector::horizontInfo )), ui->trackerimageviewer, SLOT(receiveHorizontInfo(horizontDetector::horizontInfo)));
 
 }
 
@@ -37,14 +44,14 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_loadButton_clicked()
 {
-    tracker.resetTracker();
+    m_tracker.resetTracker();
     QString fileName = this->ui->pathInput->text();
     if(fileName == ""){
         fileName = QFileDialog::getOpenFileName(this,
-                tr("Open Image"), "/home/julle/");
+                tr("Open Image"), "/home/julle/ControlerProjekte/SearchWing/Data/video/SchwedenFaehre/");
     }
     int ret;
-    ret = imageIO.loadVideo(fileName);
+    ret = m_imageIO.loadVideo(fileName);
 
     if(ret < 0){
         QMessageBox::critical(this,
@@ -52,6 +59,8 @@ void MainWindow::on_loadButton_clicked()
                               "Make sure you entered a correct and supported video file path,"
                               "<br>or a correct RTSP feed URL!");
     }
+    QString strFrameRate = this->ui->framerate->text();
+    m_imageIO.setFrameRate(strFrameRate.toInt());
 }
 
 void MainWindow::receiveImage(cv::Mat newImage)
@@ -67,24 +76,59 @@ void MainWindow::receiveImage(cv::Mat newImage)
     ui->trackerimageviewer->setSceneRect(0, 0, width, height);
     ui->trackerimageviewer->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     ui->trackerimageviewer->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    pixmap.setPixmap( QPixmap::fromImage(qnewImage) );
-    ui->trackerimageviewer->fitInView(&pixmap, Qt::KeepAspectRatioByExpanding); //Qt::KeepAspectRatio
+    m_pixmap.setPixmap( QPixmap::fromImage(qnewImage) );
+    ui->trackerimageviewer->fitInView(&m_pixmap, Qt::KeepAspectRatioByExpanding); //Qt::KeepAspectRatio
 
 }
 
 void MainWindow::on_pauseButton_clicked()
 {
-    imageIO.Pause();
+    m_imageIO.Pause();
 }
 
 void MainWindow::on_playButton_clicked()
 {
-    imageIO.Play();
+    m_imageIO.Play();
 }
 
 void MainWindow::on_trackerComboBox_currentIndexChanged(int index)
 {
     boxTracker::trackertype type=static_cast<boxTracker::trackertype>(index);
-    tracker.createNewTracker(type);
+    m_tracker.createNewTracker(type);
 }
 
+
+void MainWindow::on_framerate_editingFinished()
+{
+    QString strFrameRate = this->ui->framerate->text();
+    m_imageIO.setFrameRate(strFrameRate.toInt());
+}
+
+void MainWindow::on_horizontCorrectionCheckBox_toggled(bool checked)
+{
+    if(ui->horizontDetectionCheckBox->isChecked() == false)
+        ui->horizontCorrectionCheckBox->setChecked(false);
+    sendPreProcConf();
+}
+
+void MainWindow::on_horizontDetectorTreshSlider_sliderMoved(int position)
+{
+    sendPreProcConf();
+}
+
+void MainWindow::on_horizontDetectionCheckBox_toggled(bool checked)
+{
+
+    if(ui->horizontDetectionCheckBox->isChecked() == false)
+        ui->horizontCorrectionCheckBox->setChecked(false);
+    sendPreProcConf();
+}
+
+void MainWindow::sendPreProcConf()
+{
+    imgPreprocessing::preProcConf newConf;
+    newConf.horizontGradientTresh = ui->horizontDetectorTreshSlider->value();
+    newConf.useHorizontStabilitator = ui->horizontCorrectionCheckBox->isChecked();
+    newConf.useHorizontDetector = ui->horizontDetectionCheckBox->isChecked();
+    m_imgPreprocessor.setPreProcConf(newConf);
+}

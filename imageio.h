@@ -18,6 +18,7 @@ public:
     int loadVideo(QString path);
     void Play();
     void Pause();
+    void setFrameRate(int i_frameRate);
 signals:
     void sendImage(cv::Mat newImage);
 private:
@@ -27,6 +28,7 @@ private:
     QMutex mutex;
     cv::VideoCapture video;
     int frameRate;
+
 protected:
     void run();
 };
