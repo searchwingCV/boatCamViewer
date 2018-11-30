@@ -1,5 +1,5 @@
 #include "imgpreprocessing.h"
-
+#include <stdio.h>
 imgPreprocessing::imgPreprocessing(QObject *parent) :
     QObject(parent),
     m_horizontDector()
@@ -26,6 +26,7 @@ void imgPreprocessing::receiveImage(cv::Mat newImage)
         cv::Mat horizontStabTransform = calcHorizontCorrectionTransform(newImage,horizont.centerPt,horizont.angle);
         correctHorizont(newImage,horizontStabTransform);
         horizont.transformation=horizontStabTransform;
+        std::cout <<"pty: " << horizont.centerPt.y << " angle: "<<horizont.angle <<std::endl;
     }
     emit sendHorizontInfo(horizont);
     emit sendImage(newImage);

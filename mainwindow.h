@@ -32,8 +32,8 @@ private slots:
     void on_framerate_editingFinished();
     void on_horizontCorrectionCheckBox_toggled(bool checked);
     void on_horizontDetectorTreshSlider_sliderMoved(int position);
-
     void on_horizontDetectionCheckBox_toggled(bool checked);
+
 
 private:
     Ui::MainWindow *ui;

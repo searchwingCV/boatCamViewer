@@ -11,13 +11,13 @@ trackerImageviewer::trackerImageviewer(QWidget *parent) : QGraphicsView (parent)
     m_roiCenterCircle = nullptr;
     m_horizontLine = nullptr;
     m_roiSelectPen.setColor(QColor(255,0,0,255));//
-    m_roiSelectPen.setWidth(3);
+    m_roiSelectPen.setWidth(2);
     m_trackroiPen.setColor(QColor(0,255,0,255));
     m_trackroiPen.setWidth(3);
     m_horizontLinePen.setColor(QColor(255,255,0,255));
-    m_horizontLinePen.setWidth(3);
+    m_horizontLinePen.setWidth(2);
     m_horizontLinePtPen.setColor(QColor(255,255,0,255));
-    m_horizontLinePtPen.setWidth(3);
+    m_horizontLinePtPen.setWidth(2);
 }
 
 trackerImageviewer::~trackerImageviewer()

@@ -8,11 +8,13 @@
 #include <QMutex>
 #include <QThread>
 
+#include "imageio.h"
+
 class boxTracker : public QThread {
     Q_OBJECT
 public:
     enum trackertype{
-        MEDIANFLOW,GOTURN, MIL, BOOSTING, TLD, KCF, MOSSE,CSRT
+        MEDIANFLOW,GOTURN, MIL, BOOSTING, TLD, KCF, MOSSE, CSRT
     };
     Q_ENUM(trackertype)
     enum trackerstatus{
@@ -25,31 +27,35 @@ public:
         QPoint deltasCenter;
         uint fps;
     };
-    struct circularBuf{
-        QVector<QRect> roiCircularBuf();
-        int pos=0;
-        int validCount=0;
-    };
+    //struct circularBuf{
+    //    QVector<QRect> roiCircularBuf();
+    //    int pos=0;
+    //    int validCount=0;
+    //};
 
 
-    boxTracker(trackertype tracker);
+    boxTracker(boxTracker::trackertype tracker);
     ~boxTracker();
     bool init(cv::Mat image, cv::Rect2d boundingbox);
-    qint8 update(cv::Mat image,cv::Rect2d &boundingbox);
+    bool update(cv::Mat image,cv::Rect2d &boundingbox);
     QList<QString> getTrackerTypes();
     bool m_isInitalized;
 
-    void setTrackerType(boxTracker::trackertype tracker);
-    void createNewTracker(boxTracker::trackertype tracker);
+    //void setTrackerType(trackertype trackertype);
+    void createNewTracker(trackertype tracker);
     void resetTracker();
 private:
-    cv::Ptr<cv::Tracker> m_tracker;
+    cv::Ptr<cv::Tracker> m_openCvTracker;
+    //Tracker m_caffeGoturnTracker;
+    //Regressor m_caffeGoturnRegressor;
+
     QMetaEnum m_metaEnumTrackers;
-    cv::Ptr<cv::Tracker> createTrackerByName(cv::String name);
+    cv::Ptr<cv::Tracker> createOpenCvTrackerByName(cv::String name);
+    //Tracker createCaffeGoturnTracker();
     cv::Rect2d m_initRoi;
     cv::Mat m_currImage;
     QMutex trackerMutex;
-    bool m_initRoiReceived;
+
     trackertype m_curTrackertype;
     trackerstatus m_curTrackerStatus;
     QRect m_curTrackedRoi;
@@ -59,15 +65,16 @@ private:
     uint m_frameCounter;
     bool m_currImageProcessed;
 
-    boxTracker::trackerInfo createTrackerInfo();
-    QRect filterRoi(const QRect &roi);
-    circularBuf m_roiCircularBuf;
+    trackerInfo createTrackerInfo();
+    //QRect filterRoi(const QRect &roi);
+    //circularBuf m_roiCircularBuf;
 
 public slots:
     void receiveImage(cv::Mat newImage);
     void receiveRoi(const QRect &roi);
 signals:
     void sendTrackerInfo(boxTracker::trackerInfo trackerInfo);
+    void sendControlMsg(ImageIO::ctrlMsg ctrlMsgOut);
 protected:
     void run();
 };

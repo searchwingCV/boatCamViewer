@@ -88,7 +88,7 @@ void ImageIO::Play()
         pauseVideo = false;
     }
     if(!isRunning())
-        start();
+        start(QThread::HighestPriority);
 }
 void ImageIO::Pause()
 {
@@ -100,6 +100,21 @@ void ImageIO::setFrameRate(int i_frameRate)
     if(i_frameRate < 0 )
         frameRate=(int) video.get(CV_CAP_PROP_FPS);
     frameRate = i_frameRate;
+}
+
+
+void ImageIO::receiveControlMsg(ImageIO::ctrlMsg ctrlMsgIn)
+{
+    switch (ctrlMsgIn) {
+    case ImageIO::ctrlMsg::pause:
+            pauseVideo = true;
+        break;
+    case ImageIO::ctrlMsg::play:
+            pauseVideo = false;
+        break;
+    default:
+        break;
+    }
 }
 
 ImageIO::~ImageIO()

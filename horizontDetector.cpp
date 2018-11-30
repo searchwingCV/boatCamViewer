@@ -6,7 +6,7 @@ horizontDetector::horizontInfo horizontDetector::calcHorizont(cv::Mat i_img,floa
     cv::Mat scaledImg;
     cv::cvtColor(i_img,scaledImg,CV_RGB2GRAY);
     cv::resize(i_img,scaledImg,cv::Size(),i_imgScaling,i_imgScaling);
-    int sampleCount = 20;
+    int sampleCount = 30;
 
     cv::Point2f horizontCenterPt;
     float horizontAngle;

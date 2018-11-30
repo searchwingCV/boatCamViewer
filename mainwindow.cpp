@@ -30,6 +30,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->trackerimageviewer, SIGNAL(sendRoi(QRect)), &m_tracker, SLOT(receiveRoi(QRect)));
     connect(&m_tracker, SIGNAL(sendTrackerInfo(boxTracker::trackerInfo)), ui->trackerimageviewer, SLOT(receiveTrackerInfo(boxTracker::trackerInfo)));
     connect(&m_imgPreprocessor, SIGNAL(sendHorizontInfo(horizontDetector::horizontInfo )), ui->trackerimageviewer, SLOT(receiveHorizontInfo(horizontDetector::horizontInfo)));
+    connect(&m_tracker, SIGNAL(sendControlMsg(ImageIO::ctrlMsg)), &m_imageIO, SLOT(receiveControlMsg(ImageIO::ctrlMsg)));
 
 }
 
@@ -116,7 +117,6 @@ void MainWindow::on_horizontDetectorTreshSlider_sliderMoved(int position)
 
 void MainWindow::on_horizontDetectionCheckBox_toggled(bool checked)
 {
-
     if(ui->horizontDetectionCheckBox->isChecked() == false)
         ui->horizontCorrectionCheckBox->setChecked(false);
     sendPreProcConf();

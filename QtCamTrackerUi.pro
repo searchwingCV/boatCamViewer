@@ -30,7 +30,7 @@ HEADERS  += mainwindow.h \
 
 FORMS    += mainwindow.ui
 
-DEFINES += USE_CUDA
+#DEFINES += USE_CUDA
 
 INCLUDEPATH += /usr/local/include/opencv /usr/local/include
 
